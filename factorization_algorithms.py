@@ -57,18 +57,22 @@ def ReversedTrialDivision(m):
 
 def FermatFactorization(m):
     """
-    Input: an integer n
+    Input: an odd integer n
 
     Output: Boolean-integer pair. If m is composite, returns (True, d)
     for a divisor d of m. Otherwise, returns (False,m).
 
-    Works by checking if y^2-n is a square, incremeneting y by one each step
+    Works by checking if y^2-n is a square, incremeneting y by one each step.
+    This algorithm is *very* slow.
     """
 
     n=abs(m)
 
     if n==0 or n==1 or n==2:
         return (False, m)
+    
+    if n & 1 == 0:
+        return (True, 2)
     
     for i in range(int((n**(1/2))//1),(n+1)//2):
         (logic, div)=oth.isSquare(i**2-n)
@@ -103,7 +107,6 @@ def PollardRho(m, s=None):
     #Function for computing recursive rho sequence
     def f(x):
         return (x**2 + 1) % n
-
 
     #The main algorithm for finding divisors (Floyd's cycle finding algorithm)
     x = s
@@ -191,46 +194,6 @@ def PollardGm(m,b=None,k=1000,t=1000):
     
     return (False, m)
 
-def EllipticCurveFactorization(m,B=100,t=100,C=None,P=None):
-    """
-    Input: integer m (to be factored), integer B (used as a factor base),
-    integer t (number of elliptic curves to use in factorization if none selected).
-    Optional input C=(a,b) a pair of coefficients describing E:y^2=x^3+ax+b and
-    P=(x,y) a point on E.
-
-    Output: Boolean-integer pair. If m is composite, returns (True, d)
-    for a divisor d of m. Otherwise, returns (False,m).
-    """
-
-    n=abs(m)
-
-    while True:
-        if C != None:
-            (a,b)=C
-            (x,y)=P
-            if 4*a**3+27*b**2 == 0:
-                raise "Error: discriminant defined by C vanishes"
-            if y**2 != x**3+a*x+b:
-                raise "Error: point P not on curve defined by C"
-        else:
-            x=random.randrange(1,n)
-            y=random.randrange(1,n)
-            a=random.randrange(1,n)
-            b=y**2-x**3-a*x
-    
-        def Ellipticgrouplaw():
-            #to be written    
-            return
-        
-        #to be written
-
-
-        if C != None:
-            return (False,m)
-
-        
-
-    return
 
 def QuadraticBases(m):
     """
@@ -243,42 +206,37 @@ def QuadraticBases(m):
     Seems to work well if m has many representations as x*y for x approximately 
     the same size as y.
     """
-    
-    finished = False
-    
+        
     n=abs(m)
 
-    try:
+    r=math.ceil(math.cbrt(n))
+    s=math.floor(math.sqrt(n))
+    j=0
+    for i in range(r,s):
+        
+        #Writing n in base i as a*i^2+b*i+c
+        (q,c)=divmod(n,i)
+        if c == 0:
+            return (True, i)
+        
+        (q2,b)=divmod(q,i)
+        (q3,a)=divmod(q2,i)        
 
-        r=math.ceil(math.cbrt(n))
-        s=math.floor(math.sqrt(n))
-        j=0
-        for i in range(r,s):
-
-            (q,c)=divmod(n,i)
-            if c == 0:
-                return (True, i)
-            
-            (q2,b)=divmod(q,i)
-            (q3,a)=divmod(q2,i)        
-
-            if q3!=0:
-                continue
-            
-            disc = b**2 - 4*a*c
-            if disc >= 0:
-                (boo,rad)=oth.isSquare(disc)
-                if boo:
-                    if b&1 == rad&1:
-                        root = (-b + rad) // 2
-                        d=pr.EuclideanAlgorithm(a*i-root, n)
-                        if d != 1 and d !=n:
-                            return (True, d)
-            j+=1
-        return (False, m)
-    finally:
-        if not finished:
-            print("Computation ended in iteration:", j)
+        if q3!=0: #added since math functionality may be imprecise for large ints
+            continue
+        
+        #Checking whether a factorization of ax^2+bx+c produces a factor of n
+        disc = b**2 - 4*a*c
+        if disc >= 0:
+            (boo,rad)=oth.isSquare(disc)
+            if boo:
+                if b&1 == rad&1:
+                    root = (-b + rad) // 2
+                    d=pr.EuclideanAlgorithm(a*i-root, n)
+                    if d != 1 and d !=n:
+                        return (True, d)
+        j+=1
+    return (False, m)
 
 
 def ConstantBases(m):
@@ -291,36 +249,20 @@ def ConstantBases(m):
     gotten from different representations of m in base b, for appropriate integers b.
     Seems to work well if m has representations x*y for x much smaller than y.
     """
-    finished = False
 
     n=abs(m)
 
-    try:
-        r=math.ceil(math.cbrt(n))
-        s=math.floor(math.sqrt(n))
-        j=0
-        for i in range(r,s):
-            
-            (q,c)=divmod(n,i)
-            if c == 0:
-                return (True, i)
+    r=math.ceil(math.cbrt(n))
+    s=math.floor(math.sqrt(n))
+    j=0
+    for i in range(r,s):
+        
+        (q,c)=divmod(n,i)
+        if c == 0:
+            return (True, i)
 
-            d=pr.EuclideanAlgorithm(c,n)
-            if d !=1 and d != n:
-                return (True, d)
-            j+=1
-        return (False, m)
-    finally:
-        if not finished:
-            print("Computation ended in iteration:", j)
-
-
-def Factor(n):
-    """
-    Input: integer n
-    Output: dictionary of factors of n
-    """
-    #to be written.
-    return
-
-    
+        d=pr.EuclideanAlgorithm(c,n)
+        if d !=1 and d != n:
+            return (True, d)
+        j+=1
+    return (False, m)
