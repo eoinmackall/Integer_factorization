@@ -113,7 +113,7 @@ def MillerRabin(q, a=None):
 
     #Eliminating even q    
     if q % 2 == 0:
-        return False #q is even
+        return (False, q) #q is even
     
     #Select base for test, if none given as input
     if a == None:
@@ -132,52 +132,13 @@ def MillerRabin(q, a=None):
     s=FastModularExp(a,m,q)
     
     if (s == 1 or s == q-1):
-        return True #q is probably prime
+        return (True, q) #q is probably prime
     else:
         for i in range(k-1):
             t=s**2 % q
             if t == 1:
-                return False, EuclideanAlgorithm(s-1,q) #q is composite, returns a divisor of q
+                return (False, EuclideanAlgorithm(s-1,q)) #q is composite, returns a divisor of q
             elif t == q-1: #q is probably prime
-                return True
+                return (True, q)
             s=t
-    return False #q is composite, but no divisor found
-
-
-def SmallPrime(k=10):
-    """Randomly generates a number with ~154 digits that is likely to be prime.
-    Input is an integer k determining security; larger k values increases likelihood to be prime."""
-
-    p=random.randrange((10**148)-1,(10**154)+1,2)
-    prime=MillerRabin(p)
-    while not prime:
-        p+=2
-        for i in range(k):
-            prime=MillerRabin(p)
-            if not prime:
-                break
-        prime=MillerRabin(p)
-    
-    if EuclideanAlgorithm(557940830126698960967415390,p)!=1: #Calculates gcd of p and product of first 20 primes
-        p=SmallPrime(k)
-
-    return p
-
-
-def BigPrime(k=10):
-    """Randomly generates a number with ~164 digits that is likely to be prime.
-        Input is an integer k determining security; larger k values increases likelihood to be prime."""
-    
-    p=random.randrange((10**158)-1,(10**164)+1,2)
-    prime=MillerRabin(p)
-    while not prime:
-        p+=2
-        for i in range(k):
-            prime=MillerRabin(p)
-            if not prime:
-                break
-    
-    if EuclideanAlgorithm(557940830126698960967415390,p)!=1: #Calculates gcd of p and product of first 20 primes
-        p=BigPrime(k)
-
-    return p
+    return (False, q) #q is composite, but no divisor found
