@@ -1,9 +1,7 @@
-def isSquare(n):
+def is_square(n):
     """
     Input: a positive integer n.
     Output: a boolean integer pair. Returns (True, x) if x**2=n. Returns (False, n) otherwise
-    
-    Function logic borrowed from stack overflow, appended for use in a factorization algorithm.
     """
     m=n
     ## Reduction by powers of 4 with bit-logic

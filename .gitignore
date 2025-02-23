@@ -1,5 +1,13 @@
 __pycache__
 RSA_260_distributed.py
 tests.py
+test_script.py
 test_algorithms.py
+test_algorithms_2.py
+factorization_algorithms.py
 .venv/
+
+Factorization/__pycache__
+
+Factorization/algorithms/__pycache__
+Factorization/math_func/__pycache__

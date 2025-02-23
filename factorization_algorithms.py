@@ -2,10 +2,9 @@
 Some integer factorization algorithms.
 """
 
-import is_sqrt as oth
 import math
-import primality as pr
 import random
+
 
 
 def TrialDivision(m,B=None):
