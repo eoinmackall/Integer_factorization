@@ -26,7 +26,7 @@ def QuadraticBases(n):
         
         #Checking whether a factorization of ax^2+bx+c produces a factor of n
         disc = b**2 - 4*a*c
-        if disc >= 0:
+        if disc > 0:
             (boo,rad)=sq.is_square(disc)
             if boo:
                 if b&1 == rad&1:
@@ -34,5 +34,11 @@ def QuadraticBases(n):
                     d=math.gcd(a*i-root, n)
                     if d != 1 and d !=n:
                         return (True, d)
+        elif disc == 0:
+            root = -b//2
+            d=math.gcd(a*i-root, n)
+            if d != 1 and d != n:
+                return (True, d)
+                        
     return (False, n)
 
