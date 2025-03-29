@@ -16,7 +16,7 @@ def TrialDivision(n,B=None):
     if B==None:
         B=root.IntegerRootGem(n,2)
     
-    for i in range(2,B):
+    for i in range(2,B+1):
         if n % i ==0:
             return (True,i)
     

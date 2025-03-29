@@ -17,7 +17,7 @@ def QuadraticBases(n):
     r=introot.IntegerRootGem(n,3)
     s=introot.IntegerRootGem(n,2)
 
-    for i in range(r+1,s):
+    for i in range(r+1,s+1):
         
         #Writing n in base i as a*i^2+b*i+c
         (q,c)=divmod(n,i)        
